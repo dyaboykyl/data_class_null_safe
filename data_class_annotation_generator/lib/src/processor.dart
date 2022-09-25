@@ -45,7 +45,7 @@ class DataClassProcessor extends GeneratorForAnnotation<DataClass> {
   }
 
   String _generateMethodCopyWith(ClassElementInfo classElementInfo) {
-    String paramsString = classElementInfo.fields.fold("", (acc, e) => "$acc${e.type.name} ${e.name}, ");
+    String paramsString = classElementInfo.fields.fold("", (acc, e) => "$acc${e.type.name}? ${e.name}, ");
     paramsString = paramsString.isEmpty ? "" : "{$paramsString}";
 
     StringBuffer constructorParamsStringBuffer = StringBuffer();
