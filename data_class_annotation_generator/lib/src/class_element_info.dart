@@ -23,13 +23,13 @@ class ClassElementInfo {
     final primaryConstructor = _getPrimaryConstructor(clazz);
     final fields = primaryConstructor.parameters.map((e) {
       final customEquality = DartElementUtils.hasAnnotationOf(e, Equality) ? DartElementUtils.getAnnotationOf(e, Equality) : null;
-      return FieldInfo(name: e.name, type: e.type, customEqualityType: customEquality?.type);
+      return FieldInfo(name: e.name, type: e.type, typeParameters: e.typeParameters, customEqualityType: customEquality?.type);
     }).toList();
+    print("Found $fields for $name");
     return ClassElementInfo._(clazz, dataClassAnnotation, name, fields, primaryConstructor);
   }
 
-  String get constructorCallConstString =>
-      primaryConstructor.parameters.isEmpty && primaryConstructor.isConst ? "const " : "";
+  String get constructorCallConstString => primaryConstructor.parameters.isEmpty && primaryConstructor.isConst ? "const " : "";
 
   String get constructorCallNameString => primaryConstructor.name != "" ? ".${primaryConstructor.name}" : "";
 
@@ -37,8 +37,8 @@ class ClassElementInfo {
   String toString() => "{clazz=$clazz, name=$name, fields=$fields, primaryConstructor=$primaryConstructor}";
 
   static ConstructorElement _getPrimaryConstructor(ClassElement classElement) {
-    ConstructorElement constructor = classElement.constructors
-        .firstWhere((e) => DartElementUtils.hasAnnotationOfExact(e, PrimaryConstructor), orElse: () => null);
+    ConstructorElement constructor =
+        classElement.constructors.firstWhere((e) => DartElementUtils.hasAnnotationOfExact(e, PrimaryConstructor), orElse: () => null);
     if (constructor == null) {
       if (classElement.constructors.length == 1) {
         constructor = classElement.constructors[0];
@@ -55,9 +55,10 @@ class FieldInfo {
   final String name;
   final DartType type;
   final DartType customEqualityType;
+  final List<TypeParameterElement> typeParameters;
 
-  FieldInfo({this.name, this.type, this.customEqualityType});
+  FieldInfo({this.name, this.type, this.customEqualityType, this.typeParameters = const []});
 
   @override
-  String toString() => "{name=$name, type=$type}";
+  String toString() => "{name=$name, type=$type typeParameters=${typeParameters.map((e) => e.name)}}";
 }

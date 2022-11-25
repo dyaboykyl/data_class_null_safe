@@ -7,7 +7,7 @@ environment:
   sdk: ">=2.6.0 <3.0.0"
 
 dependencies:
-  analyzer: '>=0.39.0 <0.41.0'
+  analyzer: '4.7.0'
   build: '>=0.12.6 <2.0.0'
   build_config: '>=0.2.6 <0.5.0'
 
@@ -16,3 +16,11 @@ dependencies:
   code_builder: ^3.4.1
 
   data_class_annotation: ^0.1.8
+    # path: ../
+
+dependency_overrides:
+  source_gen: ^1.1.0
+#   code_builder: ^4.0.0
+#   build_config: ^1.1.0
+  build: ^2.0.0
+#   analyzer: 4.7.0

@@ -32,12 +32,9 @@ class DataClassProcessor extends GeneratorForAnnotation<DataClass> {
   String _generateDataClass(ClassElementInfo classElementInfo) {
     final result = StringBuffer();
     result.write('extension ${classElementInfo.name}Ext on ${classElementInfo.name} {\n');
-    if (classElementInfo.dataClassAnnotation.generateCopyWith)
-      result.write('${_generateMethodCopyWith(classElementInfo)} \n\n');
-    if (classElementInfo.dataClassAnnotation.generateDataEquals)
-      result.write('${_generateMethodEqualsData(classElementInfo)} \n\n');
-    if (classElementInfo.dataClassAnnotation.generateDataToString)
-      result.write('${_generateMethodToStringData(classElementInfo)} \n\n');
+    if (classElementInfo.dataClassAnnotation.generateCopyWith) result.write('${_generateMethodCopyWith(classElementInfo)} \n\n');
+    if (classElementInfo.dataClassAnnotation.generateDataEquals) result.write('${_generateMethodEqualsData(classElementInfo)} \n\n');
+    if (classElementInfo.dataClassAnnotation.generateDataToString) result.write('${_generateMethodToStringData(classElementInfo)} \n\n');
     if (classElementInfo.dataClassAnnotation.generateDataHashCode)
       result.write('int get dataHashCode => ${_generateHashCodeExpr(classElementInfo)}; \n');
     result.write('}');
@@ -45,7 +42,11 @@ class DataClassProcessor extends GeneratorForAnnotation<DataClass> {
   }
 
   String _generateMethodCopyWith(ClassElementInfo classElementInfo) {
-    String paramsString = classElementInfo.fields.fold("", (acc, e) => "$acc${e.type.name}? ${e.name}, ");
+    String paramsString = classElementInfo.fields.fold("", (acc, e) {
+      final subTypes = e.typeParameters.map((e) => e.name).join(",");
+      final generics = subTypes.isNotEmpty ? "<$subTypes>" : "";
+      return "$acc${e.type}? ${e.name}, ";
+    });
     paramsString = paramsString.isEmpty ? "" : "{$paramsString}";
 
     StringBuffer constructorParamsStringBuffer = StringBuffer();
@@ -78,8 +79,7 @@ class DataClassProcessor extends GeneratorForAnnotation<DataClass> {
         code.write(" && ");
       }
     }
-    final fullCode =
-        code.isEmpty ? "other is ${classElementInfo.name}" : "other is ${classElementInfo.name} && ${code.toString()}";
+    final fullCode = code.isEmpty ? "other is ${classElementInfo.name}" : "other is ${classElementInfo.name} && ${code.toString()}";
     return "bool dataEquals(dynamic other) => $fullCode;";
   }
 
