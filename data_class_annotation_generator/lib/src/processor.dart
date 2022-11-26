@@ -45,7 +45,8 @@ class DataClassProcessor extends GeneratorForAnnotation<DataClass> {
     String paramsString = classElementInfo.fields.fold("", (acc, e) {
       final subTypes = e.typeParameters.map((e) => e.name).join(",");
       final generics = subTypes.isNotEmpty ? "<$subTypes>" : "";
-      return "$acc${e.type}? ${e.name}, ";
+      final optional = "${e.type}".contains("?") ? "" : "?";
+      return "$acc${e.type}$optional ${e.name}, ";
     });
     paramsString = paramsString.isEmpty ? "" : "{$paramsString}";
 
